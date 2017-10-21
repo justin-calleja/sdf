@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+const prog = require('caporal');
+const pkgJSON = require('./package.json');
+
+prog
+  .version(pkgJSON.version)
+  .command('set', 'Sets the current working directory')
+  // .argument('<app>', 'App to deploy', /^myapp|their-app$/)
+  .argument('[env]', 'Environment to deploy on', /^dev|staging|production$/, 'local')
+  // you specify options using .option()
+  // if --tail is passed, its value is required
+  // .option('--tail <lines>', 'Tail <lines> lines of logs after deploy', prog.INT)
+  .action(function(args, options, logger) {
+		console.log('hello ')
+    // args and options are objects
+    // args = {"app": "myapp", "env": "production"}
+    // options = {"tail" : 100}
+  });
+
+prog.parse(process.argv);
