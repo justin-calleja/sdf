@@ -2,20 +2,24 @@
 
 const prog = require('caporal');
 const pkgJSON = require('./package.json');
+const readConf = require('./src/readConf');
+const main = require('./src');
 
 prog
   .version(pkgJSON.version)
-  .command('set', 'Sets the current working directory')
+  .command('mysql', 'todo...')
   // .argument('<app>', 'App to deploy', /^myapp|their-app$/)
-  .argument('[env]', 'Environment to deploy on', /^dev|staging|production$/, 'local')
+  // .argument('[env]', 'Environment to deploy on', /^dev|staging|production$/, 'local')
   // you specify options using .option()
   // if --tail is passed, its value is required
   // .option('--tail <lines>', 'Tail <lines> lines of logs after deploy', prog.INT)
   .action(function(args, options, logger) {
-		console.log('hello ')
-    // args and options are objects
-    // args = {"app": "myapp", "env": "production"}
-    // options = {"tail" : 100}
+    const conf = readConf(logger);
+		console.log(conf.searchPaths);
+    main(conf.searchPaths).then(answers => {
+      console.log('answers:');
+      console.log(answers)
+    });
   });
 
 prog.parse(process.argv);
