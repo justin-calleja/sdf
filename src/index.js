@@ -10,6 +10,10 @@ module.exports = (searchPaths) => {
 		return acc.concat(getDirs(searchPath));
 	}, []);
 
+	if (dirs.length === 0) {
+		return Promise.resolve('');
+	}
+
 	const searchDirs = (answers, input) => {
 		input = input || '';
 		return new Promise(function (resolve) {
@@ -28,8 +32,4 @@ module.exports = (searchPaths) => {
 	}];
 
 	return inquirer.prompt(questions);
-
-	// .then(function (answers) {
-	// 	console.log('answers:', answers);
-	// });
 };
