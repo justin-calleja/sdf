@@ -9,6 +9,7 @@
   "scripts": {
     "dist-clean": "rm -rf dist && mkdir dist",
     "dist": "npm run dist-clean && pkg --out-path ./dist -t node8-linux-x64,node8-macos-x64 .",
+    "postversion": "npm run dist && npm publish --access=public && git push --follow-tags",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Justin Calleja <calleja.justin@gmail.com>",
