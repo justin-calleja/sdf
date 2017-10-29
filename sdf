@@ -4,6 +4,11 @@ const prog = require('caporal');
 const pkgJSON = require('./package.json');
 const readConf = require('./src/readConf');
 const main = require('./src');
+const getDbInfo = require('./src/utils/getDbInfo');
+const commandExists = require('command-exists');
+const spawn = require('child_process').spawn;
+
+// mysql --user="root" --password="" --host="localhost"
 
 prog
   .version(pkgJSON.version)
@@ -14,11 +19,33 @@ prog
   // if --tail is passed, its value is required
   // .option('--tail <lines>', 'Tail <lines> lines of logs after deploy', prog.INT)
   .action(function(args, options, logger) {
-    const conf = readConf(logger);
-		console.log(conf.searchPaths);
-    main(conf.searchPaths).then(answers => {
-      console.log('answers:');
-      console.log(answers)
+    commandExists('mysql').then(cmd => {
+      const conf = readConf(logger);
+      main(conf.searchPaths).then(answers => {
+        const dirPath = answers.chooseDir;
+        const dbInfo = getDbInfo(dirPath);
+
+        const cmd = 'mysql';
+        const args = [
+          `--user=${dbInfo.user}`,
+          `--password=${dbInfo.password}`,
+          `--host=${dbInfo.host}`,
+          `${dbInfo.name}`
+        ];
+
+        logger.info('Running the following command:');
+        logger.info('\t', cmd, args.join(' '), '\n');
+
+        const proc = spawn(cmd, args, {
+          stdio: 'inherit'
+        });
+      }).catch(err => {
+        logger.error(err.message);
+        process.exitCode = 1;
+      });
+    }).catch(err => {
+      logger.error('The command "mysql" does not exist.');
+      process.exitCode = 1;
     });
   });
 
